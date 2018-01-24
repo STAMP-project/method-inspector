@@ -40,10 +40,10 @@ public class MethodClassifier {
 
         pairs = new ArrayList<>(6);
 
-        /*add(RETURNS_CONSTANT, returnsConstant());
+        add(RETURNS_CONSTANT, returnsConstant());
         add(SIMPLE_GETTER, simpleGetter());
         add(SIMPLE_SETTER, simpleSetter());
-        add(EMPTY, emptyMethod());*/
+        add(EMPTY, emptyMethod());
 
         add(DELEGATION, instanceDelegation());
         add(DELEGATION, staticDelegation());

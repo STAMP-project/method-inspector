@@ -9,7 +9,6 @@ import java.util.EnumSet;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertEquals;
 import static fr.inria.stamp.inspector.MethodClassification.*;
@@ -116,9 +115,7 @@ public class InspectorClassVisitorTest {
         InspectorClassVisitor visitor = new InspectorClassVisitor();
         reader.accept(visitor, 0);
 
-        for (MethodEntry method :
-                visitor.getMethods()) {
-            assertThat(method.getClassifications(), hasSize(1));
+        for (MethodEntry method : visitor.getMethods()) {
             assertThat(method.getClassifications(), hasItem(ACCESSIBLE));
         }
     }
