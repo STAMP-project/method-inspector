@@ -14,7 +14,7 @@ import java.util.List;
 public class InspectorFileVisitor implements FileVisitor<Path> {
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 
-        if(!file.endsWith(".class"))
+        if(!file.toString().endsWith(".class")) //BEWARE: endsWith method in Path objects does a different thing.
             return FileVisitResult.CONTINUE;
 
         ClassReader reader = new ClassReader(Files.readAllBytes(file));
