@@ -82,4 +82,56 @@ public class MethodRecognizer {
 
     }
 
+    /*
+        Recognizes methods delegating to a method of an object in a local or static variable
+     */
+    public static MethodRecognizer instanceDelegation() {
+        State initial = new State();
+        State thisOnStack = new State();
+        State targetLoaded = new State();
+        State paramLoop = new State();
+        State methodInvoked = new State();
+        State end = State.finalState();
+
+
+        initial.movesWith(Opcodes.ALOAD).to(thisOnStack); //For some reason, here we get ALOAD instead of ALOAD_0
+
+        initial.movesWith(Opcodes.GETSTATIC).to(targetLoaded);
+
+
+        thisOnStack.movesWith(Opcodes.GETFIELD).to(targetLoaded);
+        thisOnStack.moves(withLocalVariable()).to(paramLoop);
+        thisOnStack.moves(withInstanceMethodInvocation()).to(methodInvoked);
+
+
+        targetLoaded.moves(withLocalVariable()).to(paramLoop);
+        targetLoaded.moves(withInstanceMethodInvocation()).to(methodInvoked);
+
+        paramLoop.moves(withLocalVariable()).to(paramLoop);
+        paramLoop.moves(withInstanceMethodInvocation()).to(methodInvoked);
+
+        methodInvoked.moves(withXReturn()).to(end);
+
+        return new MethodRecognizer(initial);
+    }
+
+    public static MethodRecognizer staticDelegation() {
+
+        State initial = new State();
+        State paramLoop = new State();
+        State methodInvoked = new State();
+        State end = State.finalState();
+
+        initial.moves(withLocalVariable()).to(paramLoop);
+        initial.movesWith(Opcodes.INVOKESTATIC).to(methodInvoked);
+        paramLoop.moves(withLocalVariable()).to(paramLoop);
+        paramLoop.movesWith(Opcodes.INVOKESTATIC).to(methodInvoked);
+        methodInvoked.moves(withXReturn()).to(end);
+
+        return new MethodRecognizer(initial);
+
+    }
+
+
+
 }

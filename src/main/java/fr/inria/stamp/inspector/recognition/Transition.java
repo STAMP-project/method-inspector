@@ -1,6 +1,7 @@
 package fr.inria.stamp.inspector.recognition;
 
 
+import jdk.nashorn.internal.runtime.regexp.joni.constants.OPCode;
 import org.objectweb.asm.Opcodes;
 
 public abstract class Transition {
@@ -42,31 +43,44 @@ public abstract class Transition {
         };
     }
 
-    public static Transition withConstantOnStack() {
+    public static Transition withOpcodeBetween(int lower, int upper) {
+
         return new Transition() {
             @Override
             public boolean accepts(int opcode) {
-                return opcode > 0 && opcode <= 20;
+                return opcode >= lower && opcode <= upper;
             }
         };
+
+    }
+
+    public static Transition withConstantOnStack() {
+        return withOpcodeBetween(1, 20);
     }
 
     public static Transition withXLOAD() {
-        return new Transition() {
-            @Override
-            public boolean accepts(int opcode) {
-                return opcode >= Opcodes.ILOAD && opcode <= Opcodes.ALOAD;
-            }
-        };
+        return withOpcodeBetween(Opcodes.ILOAD, Opcodes.ALOAD);
     }
 
     public static Transition withXReturn() {
+        return withOpcodeBetween(Opcodes.IRETURN, Opcodes.RETURN);
+    }
+
+    public static Transition withLocalVariable() {
+        return withOpcodeBetween(21, 45);
+    }
+
+    public static Transition withInstanceMethodInvocation() {
+
         return new Transition() {
             @Override
             public boolean accepts(int opcode) {
-                return opcode >= Opcodes.IRETURN && opcode <= Opcodes.RETURN;
+                return opcode == Opcodes.INVOKEVIRTUAL ||
+                        opcode == Opcodes.INVOKESPECIAL ||
+                        opcode == Opcodes.INVOKEINTERFACE;
             }
         };
+
     }
 
 }

@@ -4,6 +4,8 @@ package fr.inria.stamp.inspector;
 import org.junit.Test;
 import org.objectweb.asm.ClassReader;
 import java.io.IOException;
+import java.util.EnumSet;
+
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -11,6 +13,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertEquals;
 import static fr.inria.stamp.inspector.MethodClassification.*;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class InspectorClassVisitorTest {
@@ -134,6 +137,26 @@ public class InspectorClassVisitorTest {
             for (MethodEntry method : visitor.getMethods()) {
                 assertThat(method.getClassifications(), not(hasItem(ACCESSIBLE)));
             }
+        }
+
+    }
+
+    @Test
+    public void testDelegation() throws IOException {
+
+        ClassReader reader = new ClassReader("fr/inria/stamp/inspector/test/input/WithDelegationMethods");
+        InspectorClassVisitor visitor = new InspectorClassVisitor();
+
+        reader.accept(visitor, 0);
+
+        for (MethodEntry method :
+                visitor.getMethods()) {
+            EnumSet<MethodClassification> classifications = method.getClassifications();
+            String name = method.getName();
+
+            assertTrue( name + " was not classified correctly",
+                    (name.startsWith("delegate") && classifications.contains(DELEGATION)) ||
+                             (!name.startsWith("delegate") && !classifications.contains(DELEGATION)));
 
         }
 

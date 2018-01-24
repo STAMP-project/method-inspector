@@ -12,8 +12,7 @@ public class State {
     }
 
     public State next(int opcode) {
-        for (Transition tr :
-                transitions) {
+        for (Transition tr : transitions) {
             if (tr.accepts(opcode))
                 return tr.getTarget();
         }
