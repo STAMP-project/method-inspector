@@ -5,17 +5,17 @@ import fr.inria.stamp.inspector.MethodClassification;
 import java.util.*;
 
 import static fr.inria.stamp.inspector.MethodClassification.*;
-import static fr.inria.stamp.inspector.recognition.MethodRecognizer.*;
+import static fr.inria.stamp.inspector.recognition.MethodBodyRecognizer.*;
 
 
-public class MethodClassifier {
+public class MethodBodyClassifier {
 
     class ClassificationRecognizerPair {
 
-        public MethodRecognizer recognizer;
+        public MethodBodyRecognizer recognizer;
         public MethodClassification classification;
 
-        public ClassificationRecognizerPair(MethodClassification classification, MethodRecognizer recognizer) {
+        public ClassificationRecognizerPair(MethodClassification classification, MethodBodyRecognizer recognizer) {
             this.classification = classification;
             this.recognizer = recognizer;
         }
@@ -35,7 +35,7 @@ public class MethodClassifier {
 
     private List<ClassificationRecognizerPair> pairs;
 
-    public MethodClassifier() {
+    public MethodBodyClassifier() {
         //TODO: Make it extensible later
 
         pairs = new ArrayList<>(6);
@@ -49,7 +49,7 @@ public class MethodClassifier {
         add(DELEGATION, staticDelegation());
     }
 
-    private void add(MethodClassification classification, MethodRecognizer recognizer) {
+    private void add(MethodClassification classification, MethodBodyRecognizer recognizer) {
         pairs.add(new ClassificationRecognizerPair(classification, recognizer));
 
     }

@@ -12,8 +12,15 @@ public class Utils {
         return ( access & Opcodes.ACC_DEPRECATED ) != 0;
     }
 
+    //TODO: hashCode and toString are very similar. If a simimlar third category appears, refactor the two methods into a class
+    // that classifies methods according to their name, description and access.
+
     public static boolean isHashCode(String name, String desc) {
         return name.equals("hashCode") && desc.equals("()I");
+    }
+
+    public static boolean isToString(String name, String desc) {
+        return name.equals("toString") && desc.equals("()Ljava/lang/String;");
     }
 
     private Utils () {}

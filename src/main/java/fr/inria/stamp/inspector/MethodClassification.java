@@ -4,6 +4,7 @@ public enum MethodClassification {
 
     EMPTY,
     HASH_CODE,
+    TO_STRING,
     ACCESSIBLE,
     DELEGATION,
     DEPRECATED,

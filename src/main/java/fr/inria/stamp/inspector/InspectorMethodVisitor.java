@@ -1,6 +1,6 @@
 package fr.inria.stamp.inspector;
 
-import fr.inria.stamp.inspector.recognition.MethodClassifier;
+import fr.inria.stamp.inspector.recognition.MethodBodyClassifier;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -15,7 +15,7 @@ public class InspectorMethodVisitor extends MethodVisitor {
         this.method = method;
     }
 
-    private MethodClassifier classifier = new MethodClassifier();
+    private MethodBodyClassifier classifier = new MethodBodyClassifier();
 
     private MethodEntry method;
 

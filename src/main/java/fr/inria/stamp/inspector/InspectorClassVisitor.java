@@ -1,5 +1,7 @@
 package fr.inria.stamp.inspector;
 
+import fr.inria.stamp.inspector.recognition.MethodSignatureClassifier;
+import fr.inria.stamp.inspector.recognition.MethodSignatureRecognizer;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -17,7 +19,12 @@ public class InspectorClassVisitor extends ClassVisitor {
     //TODO: We could probably use only one instance of this class
 
     public InspectorClassVisitor() {
+
         super(Opcodes.ASM5);
+
+        namePattern = Pattern.compile("(?<package>([^/]+/)*)(?<name>[^/]+)");
+        signatureClassifier = new MethodSignatureClassifier();
+
     }
 
     private String packageName;
@@ -28,7 +35,9 @@ public class InspectorClassVisitor extends ClassVisitor {
 
     private boolean isClassDeprecated;
 
-    private Pattern namePattern = Pattern.compile("(?<package>([^/]+/)*)(?<name>[^/]+)");
+    private Pattern namePattern;
+
+    private MethodSignatureClassifier signatureClassifier;
 
     @Override
     public void visit(int version, int access, String name, String signature, String supername, String[] interfaces) {
@@ -39,6 +48,12 @@ public class InspectorClassVisitor extends ClassVisitor {
         className = matcher.group("name");
         isClassAccessible = isAccessibleToPackage(access);
         isClassDeprecated = isDeprecated(access);
+
+        signatureClassifier.set(MethodClassification.ACCESSIBLE,
+                (mName, mDesc, mAcc) -> isClassAccessible && Utils.isAccessibleToPackage(mAcc));
+
+        signatureClassifier.set(MethodClassification.DEPRECATED,
+                (mName, mDesc, mAcc) -> isClassDeprecated || Utils.isDeprecated(mAcc) );
 
     }
 
@@ -53,14 +68,7 @@ public class InspectorClassVisitor extends ClassVisitor {
         entry.setName(name);
         entry.setDescription(desc);
 
-        if(isClassAccessible && isAccessibleToPackage(access))
-            entry.addClassification(MethodClassification.ACCESSIBLE);
-
-        if(isClassDeprecated || isDeprecated(access))
-            entry.addClassification(MethodClassification.DEPRECATED);
-
-        if(isHashCode(name, desc))
-            entry.addClassification(MethodClassification.HASH_CODE);
+        entry.getClassifications().addAll(signatureClassifier.classify(name, desc, access));
 
         return new InspectorMethodVisitor(entry);
     }

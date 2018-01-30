@@ -39,37 +39,37 @@ public class InspectorClassVisitorTest {
 
     }
 
-    @Test
-    public void testEmptyMethod() throws IOException {
-        ClassReader reader = new ClassReader("fr/inria/stamp/inspector/test/input/WithEmptyMethod");
+    public void find(String inClass, String target, MethodClassification... classifications) throws IOException {
+
+        ClassReader reader = new ClassReader(inClass);
         InspectorClassVisitor visitor = new InspectorClassVisitor();
         reader.accept(visitor, 0);
 
         for(MethodEntry method: visitor.getMethods()) {
-            if(method.getName().equals("empty")) {
-                assertThat(method.getClassifications(), hasItems(ACCESSIBLE, EMPTY));
+            if(method.getName().equals(target)) {
+                assertThat(method.getClassifications(), hasItems(classifications));
                 return;
             }
         }
 
-        fail("Empty method not found");
+        fail(target + " method not found");
+
+
     }
 
-    //TODO: If this pattern is used more times, then refactor.
+    @Test
+    public void testEmptyMethod() throws IOException {
+        find("fr/inria/stamp/inspector/test/input/WithEmptyMethod", "empty", ACCESSIBLE, EMPTY);
+    }
+
     @Test
     public void testHashCode() throws IOException {
-        ClassReader reader = new ClassReader("fr/inria/stamp/inspector/test/input/WithHashCode");
-        InspectorClassVisitor visitor = new InspectorClassVisitor();
-        reader.accept(visitor, 0);
+        find("fr/inria/stamp/inspector/test/input/WithHashCode", "hashCode", ACCESSIBLE, HASH_CODE, DELEGATION);
+    }
 
-        for(MethodEntry method: visitor.getMethods()) {
-            if(method.getName().equals("hashCode")) {
-                assertThat(method.getClassifications(), hasItems(ACCESSIBLE, HASH_CODE));
-                return;
-            }
-        }
-
-        fail("hashCode method not found");
+    @Test
+    public void testToString() throws IOException {
+        find("fr/inria/stamp/inspector/test/input/WithToString", "toString", ACCESSIBLE, TO_STRING, DELEGATION);
     }
 
     @Test

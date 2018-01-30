@@ -6,9 +6,9 @@ import static fr.inria.stamp.inspector.recognition.State.SINK;
 import static fr.inria.stamp.inspector.recognition.State.finalState;
 import static fr.inria.stamp.inspector.recognition.Transition.*;
 
-public class MethodRecognizer {
+public class MethodBodyRecognizer {
 
-    public MethodRecognizer(State initialState) {
+    public MethodBodyRecognizer(State initialState) {
         current = initial = initialState;
     }
 
@@ -40,17 +40,17 @@ public class MethodRecognizer {
         current = SINK;
     }
 
-    public static MethodRecognizer returnsConstant() {
+    public static MethodBodyRecognizer returnsConstant() {
 
         State initial = new State();
 
         initial.moves(withConstantOnStack()).to(new State())
                 .that().moves(withXReturn()).to(finalState());
 
-        return new MethodRecognizer(initial);
+        return new MethodBodyRecognizer(initial);
     }
 
-    public static MethodRecognizer simpleSetter() {
+    public static MethodBodyRecognizer simpleSetter() {
 
         State initial = new State();
 
@@ -59,33 +59,33 @@ public class MethodRecognizer {
                 .that().movesWith(Opcodes.PUTFIELD).to(new State())
                 .that().movesWith(Opcodes.RETURN).to(finalState());
 
-        return new MethodRecognizer(initial);
+        return new MethodBodyRecognizer(initial);
     }
 
-    public static MethodRecognizer simpleGetter() {
+    public static MethodBodyRecognizer simpleGetter() {
         State initial = new State();
 
         initial.movesWith(Opcodes.ALOAD).to(new State())
                 .that().movesWith(Opcodes.GETFIELD).to(new State())
                 .that().moves(withXReturn()).to(finalState());
 
-        return new MethodRecognizer(initial);
+        return new MethodBodyRecognizer(initial);
     }
 
-    public static MethodRecognizer emptyMethod() {
+    public static MethodBodyRecognizer emptyMethod() {
 
         State initial = new State();
 
         initial.movesWith(Opcodes.RETURN).to(finalState());
 
-        return new MethodRecognizer(initial);
+        return new MethodBodyRecognizer(initial);
 
     }
 
     /*
         Recognizes methods delegating to a method of an object in a local or static variable
      */
-    public static MethodRecognizer instanceDelegation() {
+    public static MethodBodyRecognizer instanceDelegation() {
         State initial = new State();
         State thisOnStack = new State();
         State targetLoaded = new State();
@@ -112,10 +112,10 @@ public class MethodRecognizer {
 
         methodInvoked.moves(withXReturn()).to(end);
 
-        return new MethodRecognizer(initial);
+        return new MethodBodyRecognizer(initial);
     }
 
-    public static MethodRecognizer staticDelegation() {
+    public static MethodBodyRecognizer staticDelegation() {
 
         State initial = new State();
         State paramLoop = new State();
@@ -128,7 +128,7 @@ public class MethodRecognizer {
         paramLoop.movesWith(Opcodes.INVOKESTATIC).to(methodInvoked);
         methodInvoked.moves(withXReturn()).to(end);
 
-        return new MethodRecognizer(initial);
+        return new MethodBodyRecognizer(initial);
 
     }
 
