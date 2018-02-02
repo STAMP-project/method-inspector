@@ -1,7 +1,6 @@
 package fr.inria.stamp.inspector;
 
 
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import org.junit.Test;
 import org.objectweb.asm.ClassReader;
 import java.io.IOException;
