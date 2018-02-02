@@ -11,6 +11,7 @@ public enum MethodClassification {
     DELEGATION,
     DEPRECATED,
     CONSTRUCTOR,
+    ENUM_METHOD,
     SIMPLE_SETTER,
     SIMPLE_GETTER,
     RETURNS_CONSTANT,

@@ -1,10 +1,12 @@
 package fr.inria.stamp.inspector;
 
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import org.junit.Test;
 import org.objectweb.asm.ClassReader;
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.not;
@@ -16,6 +18,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class InspectorClassVisitorTest {
+
+    //TODO; Explore the idea of a custom hamcrest matcher, only if we can provide rich information about the failure
 
     @Test
     public void testClassifier() throws IOException {
@@ -39,13 +43,12 @@ public class InspectorClassVisitorTest {
 
     }
 
-    public void find(String inClass, String target, MethodClassification... classifications) throws IOException {
+    private void find(String inClass, String target, MethodClassification... classifications) throws IOException {
+        findByName(getVisitorFor(inClass).getMethods(), target, classifications);
+    }
 
-        ClassReader reader = new ClassReader(inClass);
-        InspectorClassVisitor visitor = new InspectorClassVisitor();
-        reader.accept(visitor, 0);
-
-        for(MethodEntry method: visitor.getMethods()) {
+    private void findByName(List<MethodEntry> methods, String target, MethodClassification... classifications) {
+        for(MethodEntry method: methods) {
             if(method.getName().equals(target)) {
                 assertThat(method.getClassifications(), hasItems(classifications));
                 return;
@@ -53,32 +56,34 @@ public class InspectorClassVisitorTest {
         }
 
         fail(target + " method not found");
+    }
 
-
+    private InspectorClassVisitor getVisitorFor(String className) throws IOException {
+        ClassReader reader = new ClassReader("fr/inria/stamp/inspector/test/input/" + className);
+        InspectorClassVisitor visitor = new InspectorClassVisitor();
+        reader.accept(visitor, 0);
+        return visitor;
     }
 
     @Test
     public void testEmptyMethod() throws IOException {
-        find("fr/inria/stamp/inspector/test/input/WithEmptyMethod", "empty", ACCESSIBLE, EMPTY);
+        find("WithEmptyMethod", "empty", ACCESSIBLE, EMPTY);
     }
 
     @Test
     public void testHashCode() throws IOException {
-        find("fr/inria/stamp/inspector/test/input/WithHashCode", "hashCode", ACCESSIBLE, HASH_CODE, DELEGATION);
+        find("WithHashCode", "hashCode", ACCESSIBLE, HASH_CODE, DELEGATION);
     }
 
     @Test
     public void testToString() throws IOException {
-        find("fr/inria/stamp/inspector/test/input/WithToString", "toString", ACCESSIBLE, TO_STRING, DELEGATION);
+        find("WithToString", "toString", ACCESSIBLE, TO_STRING, DELEGATION);
     }
 
     @Test
     public void testReturningConstants() throws IOException {
 
-        ClassReader reader = new ClassReader("fr/inria/stamp/inspector/test/input/ReturningConstants");
-        InspectorClassVisitor visitor = new InspectorClassVisitor();
-        reader.accept(visitor, 0);
-
+        InspectorClassVisitor visitor = getVisitorFor("ReturningConstants");
         for(MethodEntry method: visitor.getMethods()) {
             if(method.getName().equals("<init>")) continue; //Don't check constructor
             assertThat(method.getClassifications(), hasItems(ACCESSIBLE, RETURNS_CONSTANT));
@@ -87,10 +92,7 @@ public class InspectorClassVisitorTest {
 
     @Test
     public void testDeprecatedMethod() throws IOException {
-        ClassReader reader = new ClassReader("fr/inria/stamp/inspector/test/input/WithDeprecatedMethod");
-        InspectorClassVisitor visitor = new InspectorClassVisitor();
-        reader.accept(visitor, 0);
-
+        InspectorClassVisitor visitor = getVisitorFor("WithDeprecatedMethod");
         for(MethodEntry method: visitor.getMethods()) {
             if(!method.getName().equals("<init>")) {
                 assertThat(method.getClassifications(), hasItem(DEPRECATED));
@@ -100,10 +102,7 @@ public class InspectorClassVisitorTest {
 
     @Test
     public void testDeprecatedClass() throws IOException {
-        ClassReader reader = new ClassReader("fr/inria/stamp/inspector/test/input/DeprecatedClass");
-        InspectorClassVisitor visitor = new InspectorClassVisitor();
-        reader.accept(visitor, 0);
-
+        InspectorClassVisitor visitor = getVisitorFor("DeprecatedClass");
         for(MethodEntry method: visitor.getMethods()) {
             assertThat(method.getClassifications(), hasItem(DEPRECATED));
         }
@@ -157,6 +156,23 @@ public class InspectorClassVisitorTest {
 
         }
 
+    }
+
+    @Test
+    public void testSimpleEnum() throws IOException {
+        InspectorClassVisitor visitor = getVisitorFor("SimpleEnum");
+        findByName(visitor.getMethods(), "values", ENUM_METHOD);
+        //findByName(visitor.getMethods(), "valueOf", ENUM_METHOD);
+    }
+
+    @Test
+    public void testOtherMethodsInEnum() throws IOException {
+        InspectorClassVisitor visitor = getVisitorFor("ComplexEnum");
+        for(MethodEntry entry : visitor.getMethods()) {
+            if(!entry.getName().equals("values") && !entry.getName().equals("valueOf")) {
+                assertThat(entry.getClassifications(), not(hasItem(ENUM_METHOD)));
+            }
+        }
     }
 
 }

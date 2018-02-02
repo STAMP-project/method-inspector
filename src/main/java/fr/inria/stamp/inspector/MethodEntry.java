@@ -6,20 +6,20 @@ import java.util.EnumSet;
 
 public class MethodEntry {
 
+    @SerializedName("package")
     private String packageName;
 
     public String getPackageName() {
         return packageName;
     }
 
-    @SerializedName("package")
     public void setPackageName(String packageName) {
         this.packageName = packageName;
     }
 
+    @SerializedName("class")
     private String className;
 
-    @SerializedName("class")
     public String getClassName() {
         return className;
     }

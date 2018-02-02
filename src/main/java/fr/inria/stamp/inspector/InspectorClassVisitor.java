@@ -49,11 +49,30 @@ public class InspectorClassVisitor extends ClassVisitor {
         isClassAccessible = isAccessibleToPackage(access);
         isClassDeprecated = isDeprecated(access);
 
+        //Method is not accessible is the class is not accessible
         signatureClassifier.set(MethodClassification.ACCESSIBLE,
                 (mName, mDesc, mAcc) -> isClassAccessible && Utils.isAccessibleToPackage(mAcc));
 
+        //Method is deprecated if the class is deprecated
         signatureClassifier.set(MethodClassification.DEPRECATED,
                 (mName, mDesc, mAcc) -> isClassDeprecated || Utils.isDeprecated(mAcc) );
+
+        // Compiler generated methods for enums that are not marqued as synthetic
+        if(supername.equals("java/lang/Enum")) {
+
+            signatureClassifier.set(MethodClassification.ENUM_METHOD, (mName, mDesc, mAcc) -> {
+
+                String returnType = "L" + name + ";";
+
+                return
+                        ((mAcc & Opcodes.ACC_STATIC) != 0) &&
+                        (
+                                (mName.equals("valueOf") && mDesc.equals("(Ljava/lang/String;)" + returnType)) ||
+                                (mName.equals("values") && mDesc.equals("()[" + returnType))
+                        );
+            });
+
+        }
 
     }
 
