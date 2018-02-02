@@ -1,5 +1,7 @@
 package fr.inria.stamp.inspector;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.EnumSet;
 
 public class MethodEntry {
@@ -10,12 +12,14 @@ public class MethodEntry {
         return packageName;
     }
 
+    @SerializedName("package")
     public void setPackageName(String packageName) {
         this.packageName = packageName;
     }
 
     private String className;
 
+    @SerializedName("class")
     public String getClassName() {
         return className;
     }
@@ -65,7 +69,7 @@ public class MethodEntry {
     }
 
     public String getFullName() {
-        return packageName + "/" + className + "." + name + description;
+        return packageName +  className + "." + name + description;
     }
 
     @Override
