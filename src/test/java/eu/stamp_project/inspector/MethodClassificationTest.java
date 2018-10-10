@@ -54,7 +54,8 @@ public class MethodClassificationTest {
                 Arguments.of(SimpleEnum.class, "values", ENUM_METHOD),
                 Arguments.of(SimpleEnum.class, "valueOf", ENUM_METHOD),
                 Arguments.of(ReturningConstants.class, "getNull", RETURNS_CONSTANT),
-                Arguments.of(ReturningConstants.class, "getNull", RETURNS_NULL)
+                Arguments.of(ReturningConstants.class, "getNull", RETURNS_NULL),
+                Arguments.of(WithNative.class, "nativeMethod", NATIVE)
         );
     }
 }
