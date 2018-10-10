@@ -35,11 +35,11 @@ public class MethodCollector {
             ClassName className = classTree.name();
 
             MethodEntry entry = new MethodEntry();
-            entry.setClassName(className.getNameWithoutPackage().asInternalName()); //TODO: Check this
+            entry.setClassName(className.getNameWithoutPackage().asInternalName());
             entry.setPackageName(className.getPackage().asInternalName());
             MethodNode methodNode = methodTree.rawNode();
             entry.setName(methodNode.name);
-            entry.setName(methodNode.desc);
+            entry.setDescription(methodNode.desc);
             entry.setClassifications(classifier.classify(classTree, methodTree));
 
             methods.add(entry);

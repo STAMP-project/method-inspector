@@ -5,9 +5,10 @@ import picocli.CommandLine.Spec;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Model.CommandSpec;
-import picocli.CommandLine.ParameterException
+import picocli.CommandLine.ParameterException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.Callable;
 
 import static eu.stamp_project.inspector.MethodCollector.collectFromFolders;
@@ -38,12 +39,22 @@ public class MethodInspectorMain implements Callable<Void> {
     }
 
     private File outputFile;
+
     @Parameters(index = "1",
             paramLabel = "FILE",
             arity = "0..1",
             defaultValue = "methods.json",
-            description = "Path to the JSON file output. Dfaults to ${DEFAULT-VALUE}")
+            description = "Path to the JSON file output. Defaults to ${DEFAULT-VALUE}")
     public void setOutputFile(File outputFile) {
+        try {
+            if (!outputFile.exists()) {
+                outputFile.createNewFile();
+            }
+        }
+        catch (IOException exc) {
+            throw new ParameterException(spec.commandLine(),
+                    "A problem occurred while creating the output file. Details: " + exc.toString());
+        }
         if(!outputFile.canRead()) {
             throw new ParameterException(spec.commandLine(), "Output file must be writable");
         }
