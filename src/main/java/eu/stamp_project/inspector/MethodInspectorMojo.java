@@ -1,7 +1,6 @@
 package eu.stamp_project.inspector;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -12,9 +11,12 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.Writer;
+import java.io.IOException;
 import java.util.Collection;
+import java.util.stream.Stream;
+
+import static eu.stamp_project.inspector.MethodCollector.collectFromFolders;
+import static eu.stamp_project.inspector.MethodEntry.saveToFile;
 
 @Mojo(name = "inspect", aggregator = true)
 @Execute(phase = LifecyclePhase.COMPILE)
@@ -46,17 +48,25 @@ public class MethodInspectorMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         try {
-
-            Collection<MethodEntry> methods = ProjectInspector.getMethods(_project);
-
-            try (Writer writer = new FileWriter(_output)) {
-                Gson gson = new GsonBuilder().create();
-                gson.toJson(methods, writer);
-            }
+            saveToFile(collectFromProject(), _output);
         }
         catch (Throwable exc) {
             getLog().error(exc);
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private Collection<MethodEntry> collectFromProject() throws IOException {
+        if(_project.getPackaging() != "pom")
+            return collectFromFolders(_project.getBuild().getOutputDirectory());
+
+        Stream<String> paths = _project.getCollectedProjects()
+                .stream()
+                .map(p -> ((MavenProject)p).getBuild().getOutputDirectory());
+
+        return collectFromFolders(paths.toArray(String[]::new));
+    }
+
 }
+
+
