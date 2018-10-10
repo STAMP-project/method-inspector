@@ -15,6 +15,7 @@ public enum MethodClassification {
     ENUM_METHOD,
     SIMPLE_SETTER,
     SIMPLE_GETTER,
+    RETURNS_NULL,
     RETURNS_CONSTANT,
     STATIC_INITIALIZER
 

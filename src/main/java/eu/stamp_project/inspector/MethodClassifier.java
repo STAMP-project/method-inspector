@@ -30,6 +30,7 @@ public class MethodClassifier {
         matchers.put(ENUM_METHOD, isEnumGenerated());
         matchers.put(SIMPLE_GETTER, isSimpleGetter());
         matchers.put(SIMPLE_SETTER, isSimpleSetter());
+        matchers.put(RETURNS_NULL, returnsNull());
         matchers.put(RETURNS_CONSTANT, returnsAConstant());
         matchers.put(STATIC_INITIALIZER, isStaticInitializer());
 

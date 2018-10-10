@@ -14,6 +14,8 @@ public class ReturningConstants {
 
     public String getFive() { return "five"; }
 
+    public Object getNull() { return null; }
+
     //TODO: It would be nice to detect this kind of method.
     // public int[] getEmptyArray() { return new int[0]; }
 

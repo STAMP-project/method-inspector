@@ -1,11 +1,9 @@
 package eu.stamp_project.inspector;
 
 
-import eu.stamp_project.inspector.test.input.SimpleEnum;
-import eu.stamp_project.inspector.test.input.WithEmptyMethod;
+import eu.stamp_project.inspector.test.input.*;
 import eu.stamp_project.inspector.test.Utils;
-import eu.stamp_project.inspector.test.input.WithHashCode;
-import eu.stamp_project.inspector.test.input.WithToString;
+
 import static eu.stamp_project.inspector.test.MethodClassificationMatchers.taggedAs;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -54,7 +52,9 @@ public class MethodClassificationTest {
                 Arguments.of(WithHashCode.class, "hashCode", HASH_CODE),
                 Arguments.of(WithToString.class, "toString", TO_STRING),
                 Arguments.of(SimpleEnum.class, "values", ENUM_METHOD),
-                Arguments.of(SimpleEnum.class, "valueOf", ENUM_METHOD)
+                Arguments.of(SimpleEnum.class, "valueOf", ENUM_METHOD),
+                Arguments.of(ReturningConstants.class, "getNull", RETURNS_CONSTANT),
+                Arguments.of(ReturningConstants.class, "getNull", RETURNS_NULL)
         );
     }
 }
