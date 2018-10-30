@@ -1,12 +1,16 @@
 package eu.stamp_project.inspector;
 
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.pitest.bytecode.analysis.ClassTree;
 import org.pitest.bytecode.analysis.MethodTree;
 import org.pitest.classinfo.ClassName;
 
+import javax.sound.sampled.Line;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -38,6 +42,15 @@ public class MethodCollector {
             entry.setClassName(className.getNameWithoutPackage().asInternalName());
             entry.setPackageName(className.getPackage().asInternalName());
             MethodNode methodNode = methodTree.rawNode();
+
+            LineCounter counter = new LineCounter();
+            methodNode.accept(counter);
+
+            if(counter.hasCounted()) {
+                entry.setFirstLine(counter.getFirstLine());
+                entry.setLastLine(counter.getLastLine());
+            }
+
             entry.setName(methodNode.name);
             entry.setDescription(methodNode.desc);
             entry.setClassifications(classifier.classify(classTree, methodTree));

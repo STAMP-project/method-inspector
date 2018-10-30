@@ -79,6 +79,35 @@ public class MethodEntry {
         return packageName +  className + "." + name + description;
     }
 
+    static final int NO_LINE = Integer.MIN_VALUE;
+
+    @SerializedName("from")
+    private int firstLine = NO_LINE;
+
+
+    public int getFirstLine() {
+        return firstLine;
+    }
+
+    public void setFirstLine(int firstLine) {
+        this.firstLine = firstLine;
+    }
+
+    @SerializedName("to")
+    private int lastLine = NO_LINE;
+
+    public int getLastLine() {
+        return lastLine;
+    }
+
+    public void setLastLine(int lastLine) {
+        this.lastLine = lastLine;
+    }
+
+    public boolean hasLines() {
+        return firstLine != NO_LINE && lastLine != NO_LINE;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if(! (obj instanceof  MethodEntry))
@@ -99,9 +128,16 @@ public class MethodEntry {
 
     public static void saveToFile(Collection<MethodEntry> methods, File output) throws IOException {
         try (Writer writer = new FileWriter(output)) {
+
+            GsonBuilder builder  = new GsonBuilder();
+            builder.registerTypeAdapter(MethodEntry.class, new MethodSerializer());
+
             Gson gson = new GsonBuilder().create();
+
             gson.toJson(methods, writer);
         }
     }
+
+
 }
 

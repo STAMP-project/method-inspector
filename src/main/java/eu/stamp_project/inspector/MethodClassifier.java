@@ -53,7 +53,7 @@ public class MethodClassifier {
     }
 
     private static boolean isAccessibleToPackage(int access) {
-        return ( access & ( Opcodes.ACC_PUBLIC | org.objectweb.asm.Opcodes.ACC_PROTECTED ) ) != 0;
+        return ( access & ( Opcodes.ACC_PUBLIC | Opcodes.ACC_PROTECTED ) ) != 0;
     }
 
 
