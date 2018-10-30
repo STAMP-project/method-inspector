@@ -1,5 +1,8 @@
 # Method Inspector
 
+
+## What is *Method Inspector*?
+
 **Method Inspector** is a simple Maven plugin that classifies each method in a project according to its metadata and
 structure as:
 
@@ -82,12 +85,48 @@ structure as:
     }
     ```
 The information gathered is stored in a JSON file that contains an entry for every method inspected in a project.
-It works on Maven multi-module projects. Test classes and methods are not considered in the inspection.
+Each entry contains also in which the method is located in the original source code.
+Test classes and methods are not considered in the inspection.
+The plugin also works with Maven multi-module projects.
 
-To use, simply run the following command in the project's directory.
+
+## How to use
+
+To use, run the following command in the project's directory.
 ```
-mvn fr.inria.stamp.plugins.inspector:method-inspector:inspect
+mvn fr.inria.stamp.plugins.inspector:method-inspector-maven-plugin:inspect
 ```
+
+It can also be used as a stand-alone console application. When the project is built, a `jar` file with
+all dependencies bundled is created.
+Then, the application can be used as follows:
+
+```
+java -jar method-inspector.jar <folder with .class files> [<path to output file>]
+```
+
+
+## How to build
+
+Clone the repository and build locally as follows:
+
+```
+git clone https://github.com/STAMP-project/method-inspector
+cd method-inspector
+mvn clean install
+```
+
+## More
 
 The main purpose of this project is to support the experimentation with [Descartes](https://github.com/STAMP-project/pitest-descartes)
 Most of these categories are used to discover methods which are not generally targeted by developers in their test suites.
+
+### License
+
+Method Inspector is published under the LGPL-3.0 license (see [LICENSE.md]).
+
+### Funding
+
+This project is partially funded by research project STAMP (European Commission - H2020)
+
+![STAMP - European Commission - H2020](docs/logo_readme_md.png)
