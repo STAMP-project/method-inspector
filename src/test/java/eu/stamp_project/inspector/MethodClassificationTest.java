@@ -25,7 +25,7 @@ import static eu.stamp_project.inspector.MethodClassification.*;
 
 public class MethodClassificationTest {
 
-    @DisplayName("Check specific methods")
+    @DisplayName("Checks specific methods")
     @ParameterizedTest(name="Method {1} in class {0} should be {2}")
     @MethodSource("classMethodProvider")
     public void testClassHasMethod(Class<?> clazz, String methodName, MethodClassification expected)

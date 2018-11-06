@@ -41,6 +41,7 @@ public class MethodClassifier {
             isAccessibleToPackage(classTree.rawNode().access) &&
             isAccessibleToPackage(methodTree.rawNode().access)
         );
+        matchers.put(ACCESSIBLE_CLASS, ((classTree, methodTree) -> isAccessibleToPackage(classTree.rawNode().access)));
     }
 
     public EnumSet<MethodClassification> classify(ClassTree classTree, MethodTree classNode) {

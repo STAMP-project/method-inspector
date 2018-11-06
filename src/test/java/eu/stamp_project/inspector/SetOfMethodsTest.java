@@ -9,6 +9,8 @@ import org.pitest.bytecode.analysis.ClassTree;
 import org.pitest.bytecode.analysis.MethodTree;
 
 import java.io.IOException;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
@@ -52,7 +54,7 @@ public class SetOfMethodsTest {
             String methodName = method.rawNode().name;
 
             return DynamicTest.dynamicTest(
-                    String.format("Checking method %s ", methodName),
+                    String.format("Checking method %s in %s class", methodName, targetClass.rawNode().name),
                     () -> {
                         EnumSet<MethodClassification> actual = new MethodClassifier().classify(targetClass, method);
                         assertThat(actual, matcher);
@@ -152,5 +154,22 @@ public class SetOfMethodsTest {
         return tests;
     }
 
+    @TestFactory
+    @DisplayName("Test methods for accessible and non-accessible classes")
+    public Stream<DynamicTest> testClassAccessibility() {
+
+        Class<?>[] innerClasses = NonAccessible.class.getDeclaredClasses();
+        Class<?>[] inputs = new Class[innerClasses.length + 2];
+        System.arraycopy(innerClasses, 0, inputs, 0, innerClasses.length);
+        inputs[innerClasses.length] = NonAccessible.class;
+        inputs[innerClasses.length + 1] = AccessibleOnly.class;
+
+        return Arrays.stream(inputs).map(clazz -> {
+            if(Modifier.isPrivate(clazz.getModifiers()))
+                return testMethodsInClass(clazz, all, notTaggedAs(ACCESSIBLE_CLASS));
+            return testMethodsInClass(clazz, all, taggedAs(ACCESSIBLE_CLASS));
+        }).flatMap(t -> t); // Flat map to flatten all streams
+
+    }
 
 }
