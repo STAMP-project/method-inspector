@@ -42,6 +42,7 @@ public class MethodClassifier {
             isAccessibleToPackage(methodTree.rawNode().access)
         );
         matchers.put(ACCESSIBLE_CLASS, ((classTree, methodTree) -> isAccessibleToPackage(classTree.rawNode().access)));
+        matchers.put(STATIC,  forAccess(Opcodes.ACC_STATIC));
     }
 
     public EnumSet<MethodClassification> classify(ClassTree classTree, MethodTree classNode) {
@@ -56,6 +57,4 @@ public class MethodClassifier {
     private static boolean isAccessibleToPackage(int access) {
         return ( access & ( Opcodes.ACC_PUBLIC | Opcodes.ACC_PROTECTED ) ) != 0;
     }
-
-
 }

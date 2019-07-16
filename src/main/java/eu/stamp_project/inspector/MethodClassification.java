@@ -4,6 +4,7 @@ public enum MethodClassification {
 
     EMPTY,
     NATIVE,
+    STATIC,
     ABSTRACT,
     HASH_CODE,
     SYNTHETIC,
